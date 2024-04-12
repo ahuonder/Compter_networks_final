@@ -11,46 +11,110 @@
 
 using namespace std;
 
+// A base class to handle socket connections
 class SocketManager {
-    public:
+public:
+    // Overload to setup socket
+    virtual void setup(){};
+    
+    // Overload to read from socket and return message
+    virtual string receive() { return ""; };
+    
+    // Overload to write to socket, return false if operation failed
+    virtual bool send(string message) { return false; };
+    
+    // Uses send function to write buffer contents to socket
+    bool sendBufferContents() { return this->send(this->buffer); }
+    
+    // Returns port number of socket
+    int getPortNumber() { return this->port; }
+    
+    // Sets the socket's port number if the input is >= 0
+    void setPortNumber(int newPortNumber) {
+        if (newPortNumber >= 0) {
+            this->port = newPortNumber;
+        }
+    }
+
+    // Clears the buffer 
+    void clearBuffer() { bzero(this->buffer, this->bufferSize); }
+
+    // Returns the size of the buffer
+    int getBufferSize() { return this->bufferSize; }
+    
+    // Clears the buffer and sets its new size the input (or 0 if the input is negative)
+    void clearBufferAndSetNewSize(int newBufferSize) {
+        this->clearBuffer();
+        this->bufferSize = max(0, newBufferSize);
+    }
+    
+    // Returns buffer contents
+    string getBufferContents() { return this->buffer; }
+
+    // Sets buffer contents to input if that would not overflow the buffer, otherwise returns false
+    bool setBufferContents(string newBufferContents) {
+        if (newBufferContents.size() > this-> bufferSize) { return false; }
+        this->clearBuffer();
+        strcpy(this->buffer, newBufferContents.c_str());
+        return true;
+    }
+
+    // Appends input to buffer contents if that would not overflow the buffer, otherwise returns false
+    bool appendToBuffer(string additionalBufferContents) {
+        if ((this->buffer + additionalBufferContents).size() > this->bufferSize) { return false; }
+        strcat(this->buffer, additionalBufferContents.c_str());
+        return true;
+    }
+
+    // Adds input to beginning of buffer if that would not overflow the buffer, otherwise returns false
+    bool addToBeginningOfBuffer(string additionalBufferContents) {
+        if ((this->buffer + additionalBufferContents).size() > this->bufferSize) { return false; }
+        strcpy(this->buffer, additionalBufferContents.c_str() + *(this->buffer));
+        return true;
+    }
+
+    // Get the address of the socket
+    sockaddr_in getAddress() { return this->address; }
+    
+    // Default size for the buffer
+    static const int DEFAULT_BUFFER_SIZE = 2048;
+
+protected:
+    // The port the socket will be connecting on
     int port;
-    int bufferLength;
+
+    // Size of the buffer
+    int bufferSize;
+    
+    // Buffer for storing received information
     char *buffer;
+    
+    // File descriptor for socket
     int socket;
+    
+    // Address of socket
     sockaddr_in address;
     
-    virtual void setup() {};
-    virtual int receiveMessage() { return -1; };
-    virtual int sendMessage() { return -1; };
-    
-    void loadInputIntoBuffer() {
-        this->clearBuffer();
-        fgets(this->buffer, this->bufferLength - 1, stdin);
+    // Base class constructor to initailze shared functionality across child classes
+    SocketManager(int port, int bufferSize) {
+        this->port = port;
+        this->bufferSize = bufferSize;
+        this->buffer = new char[bufferSize];
+        this->socket = ::socket(AF_INET, SOCK_STREAM, 0);
+        
+        if (this->socket < 0) { error("ERROR opening socket"); }
     }
-    
-    void clearBuffer() {
-        bzero(this->buffer, this->bufferLength);
-    }
-    
+
+    // Closes this socket connection
     void close() {
         ::close(this->socket);
     }
-    
+
+    // Makes sure the socket is closed and the buffer is cleared and deleted when object is destructed
     ~SocketManager() {
-        this->close();
+        this->clearBuffer();
         delete this->buffer;
-    }
-    
-    protected:
-    SocketManager(int port, int bufferLength) {
-        this->port = port;
-        this->bufferLength = bufferLength;
-        this->buffer = new char[bufferLength];
-        this->socket = ::socket(AF_INET, SOCK_STREAM, 0);
-        
-        if (this->socket < 0) {
-            error("ERROR opening socket");
-        }
+        this->close();
     }
 };
 

@@ -10,18 +10,17 @@ int main(int argc, char *argv[]) {
     cout << "Using port: " << portNum << endl;
     
     // Create server manager
-    ServerManager server = ServerManager(portNum, 1024);
+    ServerManager server = ServerManager(portNum);
     
     // Receive message from client, store length, handle any errors
-    int resultLength = server.receiveMessage();
-    if (resultLength < 0) { error("ERROR reading from socket"); }
+    string message = server.receive();
+    if (message.length() == 0) { error("ERROR reading from socket"); }
 
     // Output the received message
-    cout << "Message: " << server.buffer << endl;
+    cout << "Message: " << message << endl;
 
     // Send the message back to the client, store length of message, handle any errors
-    resultLength = server.sendMessage();
-    if (resultLength < 0) { error("ERROR writing to socket"); }
+    if (!server.send(message)) { error("ERROR writing to socket"); }
 
     cout << "Server program ending" << endl;
     return 0;
