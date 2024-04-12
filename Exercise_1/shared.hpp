@@ -4,9 +4,9 @@
 #include <string>
 using namespace std;
 
-void error(const char *message) {
-    perror(message);
-    exit(0);
+void throwError(string message) {
+    cerr << message << endl;
+    throw message;
 }
 
 /*

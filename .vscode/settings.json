@@ -5,6 +5,7 @@
         "string": "cpp",
         "bitset": "cpp",
         "initializer_list": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "__locale": "cpp"
     }
 }

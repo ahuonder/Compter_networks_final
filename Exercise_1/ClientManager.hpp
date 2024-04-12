@@ -11,22 +11,31 @@ class ClientManager: public SocketManager {
 public:
     // Sets up a client manager with the given server host name, port, and buffer size
     // Server host name defaults to an empty string, port defaults to 3001
-    ClientManager(string serverHostname = "", int port = 3001, int bufferSize = SocketManager::DEFAULT_BUFFER_SIZE) : SocketManager(port, bufferSize)
-    {
+    ClientManager(string serverHostname = "", int port = 3001, int bufferSize = SocketManager::DEFAULT_BUFFER_SIZE) : SocketManager(port, bufferSize) {
         this->serverHostname = serverHostname;
         this->setup();
     }
 
-    // Reads and returns a message from the socket
+    // Reads and returns a message from the socket or throws/displays an error
     string receive() {
         this->clearBuffer();
-        read(this->socket, this->buffer, this->bufferSize);
-        return this->buffer;
+        int result = read(this->socket, this->buffer, this->bufferSize);
+
+        if (result == 0) {
+            throwError("ClientManager receive: Received nothing with buffer size 0 from server");
+        } if (result < 0) {
+            throwError("ClientManager receive: failed to read socket");
+            return "";
+        } else {
+            return this->buffer;
+        }
     }
 
-    // Writes a message to the socket, returns false if operation failed
-    bool send(string message) {
-        return write(this->socket, message.c_str(), this->bufferSize) >= 0;
+    // Writes a message to the socket or throws/displays an error
+    void send(string message) {
+        if (write(this->socket, message.c_str(), this->bufferSize) < 0) {
+            throwError("ClientManager send: error writing to socket");
+        }
     }
     
     // Returns the host name of the server
@@ -49,7 +58,7 @@ private:
 
         // Display error if the server we want to connect to cannot be found
         if (serverHostInfo == NULL) {
-            error("ERROR, no such host");
+            throwError("ClientManager constructor: could not find server host info for " + this->serverHostname);
         }
 
         // Set up the server address
@@ -66,7 +75,7 @@ private:
         
         // Connect to server and display error if connection did not occur
         if (connect(this->socket, (sockaddr *) &(this->address), sizeof(this->address)) < 0) {
-            error("ERROR connecting");
+            throwError("ClientManager constructor: socket file descriptor not found");
         }
     }
 };

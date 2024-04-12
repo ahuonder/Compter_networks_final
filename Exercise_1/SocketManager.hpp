@@ -16,15 +16,21 @@ class SocketManager {
 public:
     // Overload to setup socket
     virtual void setup(){};
-    
-    // Overload to read from socket and return message
+
+    // Overload to read from socket and return message or throw/display an error
     virtual string receive() { return ""; };
-    
-    // Overload to write to socket, return false if operation failed
-    virtual bool send(string message) { return false; };
-    
-    // Uses send function to write buffer contents to socket
-    bool sendBufferContents() { return this->send(this->buffer); }
+
+    // Overload to write to socket or throw/display an error
+    virtual void send(string message) {};
+
+    // Writes message to socket, then reads message from socket or throws/displays an error
+    string sendMessageAndGetResponse(string message) {
+        this->send(message);
+        return this->receive();
+    }
+
+    // Uses send function to write buffer contents to socket or throws/displays an error
+    void sendBufferContents() { this->send(this->buffer); }
     
     // Returns port number of socket
     int getPortNumber() { return this->port; }
@@ -94,15 +100,14 @@ protected:
     
     // Address of socket
     sockaddr_in address;
-    
-    // Base class constructor to initailze shared functionality across child classes
+
+    // Base class constructor to initailze shared functionality across child classes or throws/displays an error
     SocketManager(int port, int bufferSize) {
         this->port = port;
         this->bufferSize = bufferSize;
         this->buffer = new char[bufferSize];
         this->socket = ::socket(AF_INET, SOCK_STREAM, 0);
-        
-        if (this->socket < 0) { error("ERROR opening socket"); }
+        if (this->socket < 0) { throwError("SocketManager constructor: Could not get socket file descriptor"); }
     }
 
     // Closes this socket connection
