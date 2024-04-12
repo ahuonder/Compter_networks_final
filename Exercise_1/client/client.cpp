@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
     cout << "Client starting" << endl;
 
     // The port the connection will occur over
-    int portNum = getPortNumber(argv, 3001);
+    int portNum = getPortNumber(argc, argv, 3001);
 
     // Output the port that will be used
     cout << "Using port: " << portNum << endl;
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
     }
     
     // Output the received response
-    cout << buffer << endl;
+    cout << "Response: " << buffer << endl;
     
     // Close the client socket
     close(clientSocketDescriptor);

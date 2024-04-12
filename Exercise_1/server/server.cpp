@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
     cout << "Server starting" << endl;
 
     // The port the connection will occur over
-    int portNum = getPortNumber(argv, 3001);
+    int portNum = getPortNumber(argc, argv, 3001);
 
     // Output the port that will be used
     cout << "Using port: " << portNum << endl;
