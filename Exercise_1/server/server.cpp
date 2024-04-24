@@ -1,4 +1,4 @@
-#include "../ServerManager.hpp"
+#include "../EchoServer.hpp"
 
 using namespace std;
 
@@ -8,21 +8,12 @@ int main(int argc, char *argv[]) {
     // Get and display port number to use
     int portNum = getPortNumber(argc, argv, 3001);
     cout << "Using port: " << portNum << endl;
-    
+
     try {
-        // Create server manager
-        ServerManager server = ServerManager(portNum);
-        
-        while (true) {
-            // Receive message from client, store length, handle any errors
-            string message = server.receive();
-            cout << "Message Recieved: " << message << endl;
-            
-            // Send the message back to the client
-            server.send(message);
-            cout << "Message returned to client: " << message << endl;
-        }
-    } catch(string error) {
+        // Create server manager and start listening and echoing messages
+        EchoServer echoServer = EchoServer(portNum);
+        echoServer.start();
+    } catch (string error) {
         cout << "Error occurred: " << error << endl;
     }
 

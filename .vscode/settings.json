@@ -7,5 +7,6 @@
         "initializer_list": "cpp",
         "string_view": "cpp",
         "__locale": "cpp"
-    }
+    },
+    "C_Cpp.clang_format_style": "{ BasedOnStyle: Google, IndentWidth: 4, ColumnLimit: 0}"
 }

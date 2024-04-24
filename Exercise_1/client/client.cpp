@@ -2,6 +2,10 @@
 
 using namespace std;
 
+/*
+    IDK why input is fucked with this :/
+*/
+
 int main(int argc, char *argv[]) {
     cout << "Client starting" << endl;
 
@@ -9,26 +13,37 @@ int main(int argc, char *argv[]) {
     int portNum = getPortNumber(argc, argv, 3001);
     cout << "Using port: " << portNum << endl;
 
+    cin.clear();
+    cin.ignore(INT_MAX, '\n');
+
     try {
-        // Create client manager
+        // Create client manager to operate on localhost
         ClientManager client = ClientManager("localhost", portNum);
 
         string message = "";
 
-        while(true) {
+        while (true) {
             // Get the message to send from the user
             cout << "Enter message to send to server [X to exit program]:" << endl;
             getline(cin, message);
-
-            if (message == "X" or message == "x") { break; }
+            cin.clear();
+            cin.ignore(INT_MAX, '\n');
             
+            cout << "INPUT: " << message << endl;
+
+            if (message == "X" or message == "x") {
+                break;
+            }
+
+            client.send(message);
+
             // Send message and get response, output response
-            cout << "Response: " << client.sendMessageAndGetResponse(message) << endl;
+            cout << "Response: " << client.receive() << endl;
         }
-    } catch(string error) {
+    } catch (string error) {
         cout << "Error occurred: " << error << endl;
     }
-    
+
     cout << "Client program ending" << endl;
     return 0;
 }

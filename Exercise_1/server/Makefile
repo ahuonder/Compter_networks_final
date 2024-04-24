@@ -9,8 +9,4 @@ run: server.cpp ../SocketManager.hpp ../ServerManager.hpp ../shared.hpp
 	./server
 	
 clean:
-	rm a.out
-	
-cleanAll:
-	rm a.out
 	rm server
