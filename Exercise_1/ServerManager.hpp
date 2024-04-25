@@ -4,9 +4,7 @@
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <sys/poll.h>
-
 #include <vector>
-
 #include "SocketManager.hpp"
 
 using namespace std;
@@ -30,8 +28,8 @@ class ServerManager : public SocketManager {
     void start() { this->getConnectionEvents(); }
 
     // Writes a message to the socket or throws/displays an error
-    void send(string message, int clientSocket) {
-        if (write(clientSocket, message.c_str(), message.size()) < 0) {
+    void send(string message, int clientIndex) {        
+        if (write(this->clients[clientIndex].fd, message.c_str(), message.size()) < 0) {
             throwError("ServerManager send: error writing to socket");
         }
     }
@@ -161,8 +159,7 @@ class ServerManager : public SocketManager {
         // Acept all connections
         while (true) {
             // Accept new connection
-            int newClientSocket =
-                accept(this->socket, NULL, (socklen_t *)this->bufferSize);
+            int newClientSocket = accept(this->socket, NULL, (socklen_t *)this->bufferSize);
 
             if (newClientSocket < 0) {
                 // Something went wrong if the errno is not EWOULDBLOCK
@@ -221,11 +218,14 @@ class ServerManager : public SocketManager {
     // Gets called by the kernel when the socket has an event occur on it
     // Accepts new connections or receives data based on the type of event
     void getConnectionEvents() {
-        while (true) {
+        bool clientFound = false;
+
+        do {
+            clientFound = false;
             // Allows process to wait for an event to occur and to wake up the process
             // when the event occurs Wait for a timeout
-            int pollResult = poll(this->clients, 2, this->timeout);
-
+            int pollResult = poll(this->clients, this->clientCount, this->timeout);
+            
             // If poll() returns -1, an error has occurred
             if (pollResult < 0) {
                 throwError("poll error");
@@ -244,14 +244,16 @@ class ServerManager : public SocketManager {
                     cerr << "poll result was not \"POLLIN\"" << endl;
                     this->stopAcceptingConnections();
                 } else if (this->clients[i].fd == this->socket) {
-                    // We've found the socket and now we can accept data on it. Yay!
+                    // Accept a new connection
+                    clientFound = true;
                     this->acceptConnections();
                 } else {
-                    // All theat we're left with now is to receive data on this socket
+                    clientFound = true;
+                    // Receive from an existing connection
                     this->receiveData(i);
                 }
             }
-        }
+        }  while (clientFound);
     }
 };
 

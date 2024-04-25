@@ -30,7 +30,7 @@ class EchoServer : public ServerManager {
 
     // Called when a message is received from a client
     void onReceive(string message, int clientSocket) override {
-        cout << endl << "EchoServer onReceive message: " << message << endl;
+        cout << endl << "EchoServer onReceive from clientSocketNumber: " << clientSocket << ", message: " << message << endl;
         this->send(message, clientSocket);
     }
 };

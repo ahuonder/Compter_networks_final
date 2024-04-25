@@ -13,9 +13,6 @@ int main(int argc, char *argv[]) {
     int portNum = getPortNumber(argc, argv, 3001);
     cout << "Using port: " << portNum << endl;
 
-    cin.clear();
-    cin.ignore(INT_MAX, '\n');
-
     try {
         // Create client manager to operate on localhost
         ClientManager client = ClientManager("localhost", portNum);
