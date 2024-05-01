@@ -1,7 +1,7 @@
 #ifndef EchoServer_hpp
 #define EchoServer_hpp
 
-#include "ServerManager.hpp"
+#include "../../Shared/ServerManager.hpp"
 
 using namespace std;
 

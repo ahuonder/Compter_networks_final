@@ -1,12 +1,8 @@
-build: client.cpp ../SocketManager.hpp ../ClientManager.hpp ../shared.hpp
-	g++ -o client client.cpp
-	
-run: client
+run: build
 	./client
 	
-run: client.cpp ../SocketManager.hpp ../ClientManager.hpp ../shared.hpp
+build: client.cpp ../../Shared/SocketManager.hpp ../../Shared/ClientManager.hpp ../../Shared/shared.hpp
 	g++ -o client client.cpp
-	./client
 	
 clean:
 	rm client

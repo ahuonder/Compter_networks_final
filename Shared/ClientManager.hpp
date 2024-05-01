@@ -2,7 +2,6 @@
 #define ClientManager_hpp
 
 #include <string>
-
 #include "SocketManager.hpp"
 
 using namespace std;

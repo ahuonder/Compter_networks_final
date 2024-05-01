@@ -1,7 +1,7 @@
 #ifndef shared_hpp
 #define shared_hpp
 
-#include <string>
+#include <iostream>
 using namespace std;
 
 void throwError(string message) {

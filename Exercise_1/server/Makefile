@@ -1,12 +1,8 @@
-build: server.cpp ../SocketManager.hpp ../ServerManager.hpp ../shared.hpp
-	g++ -o server server.cpp
-	
-run: server
+run: build
 	./server
-	
-run: server.cpp ../SocketManager.hpp ../ServerManager.hpp ../shared.hpp
+
+build: server.cpp ../../Shared/SocketManager.hpp  ../../Shared/ServerManager.hpp ../../Shared/shared.hpp
 	g++ -o server server.cpp
-	./server
 	
 clean:
 	rm server

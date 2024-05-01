@@ -6,9 +6,6 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-#include <iostream>
-
 #include "shared.hpp"
 
 using namespace std;
