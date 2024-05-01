@@ -218,16 +218,12 @@ class ServerManager : public SocketManager {
     // Gets called by the kernel when the socket has an event occur on it
     // Accepts new connections or receives data based on the type of event
     void getConnectionEvents() {
-        bool clientFound = false;
 
-        do {
-            clientFound = false;
+        while (true) {
             // Allows process to wait for an event to occur and to wake up the process
-            // when the event occurs Wait for a timeout
-            int pollResult = poll(this->clients, this->clientCount, this->timeout);
-            
+            // when the event occurs Wait for a timeout            
             // If poll() returns -1, an error has occurred
-            if (pollResult < 0) {
+            if (poll(this->clients, this->clientCount, this->timeout) < 0) {
                 throwError("poll error");
                 break;
             }
@@ -240,20 +236,17 @@ class ServerManager : public SocketManager {
                 if (returnedEvents == 0) {
                     continue;
                 } else if (returnedEvents != POLLIN) {
-                    // If the value is not POLLIN, something weird happened and we should stop lol
-                    cerr << "poll result was not \"POLLIN\"" << endl;
-                    this->stopAcceptingConnections();
+                    // If the value is not POLLIN, something weird happened and we should remove this client lol
+                    this->removeClient(i, false);
                 } else if (this->clients[i].fd == this->socket) {
                     // Accept a new connection
-                    clientFound = true;
                     this->acceptConnections();
                 } else {
-                    clientFound = true;
                     // Receive from an existing connection
                     this->receiveData(i);
                 }
             }
-        }  while (clientFound);
+        }
     }
 };
 

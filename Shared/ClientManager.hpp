@@ -24,11 +24,9 @@ class ClientManager : public SocketManager {
         int result = read(this->socket, this->buffer, this->bufferSize);
 
         if (result == 0) {
-            throwError(
-                "ClientManager receive: Received nothing with buffer size 0 from "
-                "server");
-        }
-        if (result < 0) {
+            throwError("Server disconnected");
+            return "";
+        } else if (result < 0) {
             throwError("ClientManager receive: failed to read socket");
             return "";
         } else {
@@ -41,6 +39,12 @@ class ClientManager : public SocketManager {
         if (write(this->socket, message.c_str(), message.size()) < 0) {
             throwError("ClientManager send: error writing to socket");
         }
+    }
+    
+    // Sends input message to server and returns received message from server
+    string sendThenReceive(string message) {
+        this->send(message);
+        return this->receive();
     }
 
     // Returns the host name of the server

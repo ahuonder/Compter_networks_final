@@ -2,10 +2,6 @@
 
 using namespace std;
 
-/*
-    IDK why input is fucked with this :/
-*/
-
 int main(int argc, char *argv[]) {
     cout << "Client starting" << endl;
 
@@ -26,16 +22,12 @@ int main(int argc, char *argv[]) {
             cin.clear();
             cin.ignore(INT_MAX, '\n');
             
-            cout << "INPUT: " << message << endl;
-
             if (message == "X" or message == "x") {
                 break;
             }
 
-            client.send(message);
-
             // Send message and get response, output response
-            cout << "Response: " << client.receive() << endl;
+            cout << "Response: " << client.sendThenReceive(message) << endl;
         }
     } catch (string error) {
         cout << "Error occurred: " << error << endl;
