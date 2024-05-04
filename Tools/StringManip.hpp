@@ -1,6 +1,7 @@
 #ifndef StringManip_hpp
 #define StringManip_hpp
 
+// CPSC 447 Final Project
 // String manipulation functions
 // Author: Mark Reggiardo
 

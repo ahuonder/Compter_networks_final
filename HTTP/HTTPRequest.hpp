@@ -1,6 +1,7 @@
 #ifndef HTTPRequest_hpp
 #define HTTPRequest_hpp
 
+// CPSC 447 Final Project
 // Manages information for an HTTPRequest
 // Author: Mark Reggiardo
 

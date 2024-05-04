@@ -1,6 +1,7 @@
 #ifndef HTTPHeader_hpp
 #define HTTPHeader_hpp
 
+// CPSC 447 Final Project
 // A class that represents an HTTP headeer
 // Author: Mark Reggiardo
 

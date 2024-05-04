@@ -1,6 +1,7 @@
 #ifndef HTTPStatus_hpp
 #define HTTPStatus_hpp
 
+// CPSC 447 Final Project
 // A class that contains info for an HTTP status
 // Author: Mark Reggiardo
 

@@ -1,6 +1,7 @@
 #ifndef HTTPResponse_hpp
 #define HTTPResponse_hpp
 
+// CPSC 447 Final Project
 // Manages information for an HTTPResponse
 // Author: Mark Reggiardo
 

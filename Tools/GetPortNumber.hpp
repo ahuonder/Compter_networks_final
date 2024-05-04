@@ -1,6 +1,7 @@
 #ifndef GetPortNumber_hpp
 #define GetPortNumber_hpp
 
+// CPSC 447 Final Project
 // A function to get the port number to use for a program
 // Author: Mark Reggiardo
 

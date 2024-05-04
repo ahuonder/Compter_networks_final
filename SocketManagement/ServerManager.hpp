@@ -1,6 +1,7 @@
 #ifndef ServerManager_hpp
 #define ServerManager_hpp
 
+// CPSC 447 Final Project
 // A base class that creates an API for running a server
 // Author: Mark Reggiardo
 

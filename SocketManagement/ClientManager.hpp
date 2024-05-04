@@ -1,6 +1,7 @@
 #ifndef ClientManager_hpp
 #define ClientManager_hpp
 
+// CPSC 447 Final Project
 // A class that manages socket connections for a client
 // Author: Mark Reggiardo
 

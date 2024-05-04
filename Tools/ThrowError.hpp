@@ -1,6 +1,7 @@
 #ifndef ThrowError_hpp
 #define ThrowError_hpp
 
+// CPSC 447 Final Project
 // A function that helps handle errors
 // Author: Mark Reggiardo
 

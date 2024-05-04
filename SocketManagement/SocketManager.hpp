@@ -1,6 +1,7 @@
 #ifndef SocketManager_hpp
 #define SocketManager_hpp
 
+// CPSC 447 Final Project
 // A base class to manage socket connections, meant to be inherited from
 // Author: Mark Reggiardo
 
