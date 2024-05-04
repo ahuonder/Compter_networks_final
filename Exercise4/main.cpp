@@ -1,5 +1,5 @@
 // Exercise 4
-// Write a simple Web server for Windows that serves HTML, text, and GIF images.
+// Write a simple Web server that serves HTML, text, and GIF images.
 
 #include <iostream>
 using namespace std;
