@@ -1,7 +1,13 @@
-#include "EchoServer.hpp"
+// CPSC 447 Final Project
+// Exercise 1 - Server
+// Based on exercise 2.4 from Stalling's textbook
+// Create stream-based echo server, which can simultaneously handle multiple clients connecting to it
+// Author: Mark Reggiardo
 
+#include "EchoServer.hpp"
 using namespace std;
 
+// Runs a stream-based echo server
 int main(int argc, char *argv[]) {
     cout << "Server starting" << endl;
 
@@ -14,6 +20,7 @@ int main(int argc, char *argv[]) {
         EchoServer echoServer = EchoServer(portNum);
         echoServer.start();
     } catch (string error) {
+        // Handle thrown exceptions
         cout << "Error occurred: " << error << endl;
     }
 

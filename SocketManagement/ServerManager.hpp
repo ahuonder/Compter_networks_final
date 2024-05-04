@@ -1,50 +1,61 @@
 #ifndef ServerManager_hpp
 #define ServerManager_hpp
 
+// A base class that creates an API for running a server
+// Author: Mark Reggiardo
+
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <sys/poll.h>
 #include <vector>
 #include "SocketManager.hpp"
-
 using namespace std;
 
-// Handle a socket connection for a server
+// Handles running server and socket connections, inehrit from this class to use API endpoints
 class ServerManager : public SocketManager {
    public:
-    // Sets up a server manager with the given port (defaults to 3001) and buffer
-    // size
-    ServerManager(int port = 3001,
-                  int bufferSize = SocketManager::DEFAULT_BUFFER_SIZE,
-                  int clientCapacity = ServerManager::DEFAULT_CLIENT_CAPACITY,
-                  int timeout = ServerManager::DEFAULT_TIMEOUT)
-        : SocketManager(port, bufferSize) {
+    // Sets up a server manager
+    // Parameter 1: Port to use for program, defaults to SocketManager::DEFAULT_PORT
+    // Parameter 2: Buffer size, defualts to SocketManager::DEFAULT_BUFFER_SIZE
+    // Parameter 3: Max number of clients that can connect at once, defaults to ServerManager::DEFAULT_CLIENT_CAPACITY
+    // Parameter 4: How long to listen for connection events for, defaults to ServerManager::DEFAULT_TIMEOUT
+    ServerManager(
+        int port = SocketManager::DEFAULT_PORT, 
+        int bufferSize = SocketManager::DEFAULT_BUFFER_SIZE,
+        int clientCapacity = ServerManager::DEFAULT_CLIENT_CAPACITY,
+        int timeout = ServerManager::DEFAULT_TIMEOUT
+    ) : SocketManager(port, bufferSize) {
+        
         this->clients = new pollfd[clientCapacity]();
         this->timeout = timeout;
         this->setup();
     }
 
-    // Call to start listening to clients and echoing client messages
-    void start() { this->getConnectionEvents(); }
+    // Call to start listening to clients
+    void start() { 
+        this->getConnectionEvents(); 
+    }
 
-    // Writes a message to the socket or throws/displays an error
-    void send(string message, int clientIndex) {        
+    // Sends a message to the indicated client
+    // Parameter 1: The message to send
+    // Parameter 2: the index of the client to send the message to
+    void send(string message, int clientIndex) {
         if (write(this->clients[clientIndex].fd, message.c_str(), message.size()) < 0) {
             throwError("ServerManager send: error writing to socket");
         }
     }
 
-    // Stop accepting new connections
-    void stopAcceptingConnections() {
+    // Call to close all connections
+    void closeAllConnections() {
         for (int i = 0; i < this->clientCount; i++) {
             ::close(this->clients[i].fd);
         }
 
         this->clientCount = 0;
-        cout << "No longer accepting connections" << endl;
+        cout << "All client connections have been closed" << endl;
     }
 
-    // The number of clients currently connected to this server
+    // Returns The number of clients currently connected to this server
     int getConnectionCount() {
         if (this->clientCount > 0) {
             return this->clientCount - 1;
@@ -53,26 +64,31 @@ class ServerManager : public SocketManager {
         }
     }
 
-    // Closes the client socket when object is destructed
+    // Closes all client sockets when object is destructed
     ~ServerManager() {
-        this->stopAcceptingConnections();
+        this->closeAllConnections();
         delete this->clients;
     }
 
     // Default maximum number of clients to accept from at once
     static const int DEFAULT_CLIENT_CAPACITY = 128;
 
-    // Default amount of time to poll() for
+    // Default amount of time to poll() for in ms
     static const int DEFAULT_TIMEOUT = 5 * 60 * 1000;
 
    protected:
-    // Override to handle new client connection
+    // Override to handle new client connection, called when a new client connects
+    // Parameter 1: The index of the client that connected
     virtual void onConnect(int clientSocket){};
 
-    // Override to handle client disconnections
+    // Override to handle client disconnections, called when a client disconnects
+    // Parameter 1: The index of the client that disconnected
+    // Parameter 2: True if the client disconnected itself
     virtual void onDisconnect(int clientSocket, bool didClientDisconnect){};
 
-    // Override to handle receiving data from clients
+    // Override to handle receiving data from clients, called when a message is received from a client
+    // Parameter 1: The message received from a client
+    // Parameter 2: The index of the client the message was received from
     virtual void onReceive(string message, int clientSocket){};
 
    private:
@@ -82,18 +98,18 @@ class ServerManager : public SocketManager {
     // An array of clients
     pollfd *clients;
 
-    // How long to poll() for
+    // How long to poll() for client connections and messages for
     int timeout;
 
-    // Sets up the socket, starts listening on it, and gets the client info or
-    // throws/displays an error
-    void setup() {
+    // Sets up the socket, starts listening on it, and gets the client info
+    // Calls throwError() if an error occurs
+    void setup() override {
         this->clientCount = 0;
         this->connectToSocket();
         this->addClient(this->socket, POLLIN);
     }
 
-    // Add a client when a new connects
+    // Add a client to the saved array of clients when a new client connects
     void addClient(int newSocket, int events) {
         this->clients[this->clientCount].fd = newSocket;
         this->clients[this->clientCount].events = events;
@@ -101,7 +117,8 @@ class ServerManager : public SocketManager {
     }
 
     // Remove a client at the given index when it is no longer in use
-    // Second parameter is to indicate if client disconnected itself
+    // Parameter 1: The client index to remove
+    // Parameter 2: Pass in true if the client disconnected itself
     void removeClient(int index, bool didClientDisconnect) {
         ::close(this->clients[index].fd);
 
@@ -117,10 +134,9 @@ class ServerManager : public SocketManager {
     void connectToSocket() {
         int socketOption = 1;
 
-        // Allow program to reuse local address when the server is restarted before
-        // the required wait time expires.
-        if (setsockopt(this->socket, SOL_SOCKET, SO_REUSEADDR,
-                       (char *)&socketOption, sizeof(socketOption)) < 0) {
+        // Allow program to reuse local address when the server is restarted
+        // before the required wait time expires.
+        if (setsockopt(this->socket, SOL_SOCKET, SO_REUSEADDR, (char *)&socketOption, sizeof(socketOption)) < 0) {
             cout << "errno: " << errno << endl;
             throwError("setsockopt error");
             return;
@@ -139,12 +155,10 @@ class ServerManager : public SocketManager {
               sizeof(this->address));                // Zero out all fields in serverAddress
         this->address.sin_family = AF_INET;          // Listen for internet connections
         this->address.sin_addr.s_addr = INADDR_ANY;  // IP address of this machine
-        this->address.sin_port =
-            htons(this->port);  // Port number in network bye order
+        this->address.sin_port = htons(this->port);  // Port number in network bye order
 
         // Bind to the socket to get its file descriptor
-        if (bind(this->socket, (sockaddr *)&(this->address),
-                 sizeof(this->address)) < 0) {
+        if (bind(this->socket, (sockaddr *)&(this->address), sizeof(this->address)) < 0) {
             throwError("bind error");
             return;
         }
@@ -175,7 +189,8 @@ class ServerManager : public SocketManager {
             // Add the new client to the list of clients
             this->addClient(newClientSocket, POLLIN);
 
-            // Call overriden method to handle new connection event in child class
+            // Call overriden method to handle new connection event in child
+            // class
             this->onConnect(this->clientCount - 1);
         }
     }
@@ -189,27 +204,30 @@ class ServerManager : public SocketManager {
             this->clearBuffer();
 
             // Receive data on the indicated socket
-            int messageLength = read(this->clients[clientIndex].fd, this->buffer,
-                                     sizeof(this->buffer));
+            int messageLength = read(this->clients[clientIndex].fd, this->buffer, sizeof(this->buffer));
 
-            // If the messageLength is 0, we're done and we can disconnect. Otherwise, keep receiving
+            // If the messageLength is 0, we're done and we can disconnect.
+            // Otherwise, keep receiving
             if (messageLength <= 0) {
                 // Client disconnected
                 if (messageLength == 0) {
                     this->removeClient(clientIndex, true);
                 }
 
-                // Something's wrong if there's an errorno that doesnt equal EWOULDBLOCK
+                // Something's wrong if there's an errorno that doesnt equal
+                // EWOULDBLOCK
                 if (errno != EWOULDBLOCK) {
                     this->removeClient(clientIndex, false);
                     throwError("recv() error");
                 }
 
-                // Call overriden onReceive message to handle received data in child class
+                // Call overriden onReceive message to handle received data in
+                // child class
                 this->onReceive(message, clientIndex);
                 return;
             } else {
-                // Add the data received in this iteration of the loop to our message
+                // Add the data received in this iteration of the loop to our
+                // message
                 message.append(this->buffer);
             }
         };
@@ -218,11 +236,10 @@ class ServerManager : public SocketManager {
     // Gets called by the kernel when the socket has an event occur on it
     // Accepts new connections or receives data based on the type of event
     void getConnectionEvents() {
-
         while (true) {
-            // Allows process to wait for an event to occur and to wake up the process
-            // when the event occurs Wait for a timeout            
-            // If poll() returns -1, an error has occurred
+            // Allows process to wait for an event to occur and to wake up the
+            // process when the event occurs Wait for a timeout If poll()
+            // returns -1, an error has occurred
             if (poll(this->clients, this->clientCount, this->timeout) < 0) {
                 throwError("poll error");
                 break;
@@ -236,7 +253,8 @@ class ServerManager : public SocketManager {
                 if (returnedEvents == 0) {
                     continue;
                 } else if (returnedEvents != POLLIN) {
-                    // If the value is not POLLIN, something weird happened and we should remove this client lol
+                    // If the value is not POLLIN, something weird happened and
+                    // we should remove this client lol
                     this->removeClient(i, false);
                 } else if (this->clients[i].fd == this->socket) {
                     // Accept a new connection
