@@ -1,7 +1,8 @@
 #ifndef EchoServer_hpp
 #define EchoServer_hpp
 
-#include "../../Shared/ServerManager.hpp"
+#include "../../SocketManagement/ServerManager.hpp"
+#include "../../Tools/GetPortNumber.hpp"
 
 using namespace std;
 

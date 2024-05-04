@@ -53,6 +53,7 @@ class ClientManager : public SocketManager {
     // Sets a new host name for the server to connect to and sets up the socket
     // again
     void setServerHostname(string newHostname) {
+        this->close();
         this->serverHostname = newHostname;
         this->setup();
     }
@@ -88,7 +89,7 @@ class ClientManager : public SocketManager {
         if (connect(this->socket, (sockaddr *)&(this->address),
                     sizeof(this->address)) < 0) {
             throwError("ClientManager constructor: socket file descriptor not found");
-        }
+        }        
     }
 };
 

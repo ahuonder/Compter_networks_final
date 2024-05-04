@@ -1,7 +1,7 @@
 run: build
 	./server
 
-build: server.cpp ../../Shared/SocketManager.hpp  ../../Shared/ServerManager.hpp ../../Shared/shared.hpp
+build: server.cpp ./EchoServer.hpp ../../SocketManagement/ServerManager.hpp ../../Tools/GetPortNumber.hpp
 	g++ -o server server.cpp
 	
 clean:

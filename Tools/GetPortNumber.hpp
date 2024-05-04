@@ -1,13 +1,8 @@
-#ifndef shared_hpp
-#define shared_hpp
+#ifndef GetPortNumber_hpp
+#define GetPortNumber_hpp
 
-#include <iostream>
+#include <string>
 using namespace std;
-
-void throwError(string message) {
-    cerr << message << endl;
-    throw message;
-}
 
 /*
     Returns the port number to use for the program

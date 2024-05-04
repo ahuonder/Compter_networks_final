@@ -1,4 +1,5 @@
-#include "../../Shared/ClientManager.hpp"
+#include "../../SocketManagement/ClientManager.hpp"
+#include "../../Tools/GetPortNumber.hpp"
 
 using namespace std;
 

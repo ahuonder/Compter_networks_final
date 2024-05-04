@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "shared.hpp"
+#include "../Tools/ThrowError.hpp"
 
 using namespace std;
 
@@ -65,8 +65,7 @@ class SocketManager {
         this->socket = ::socket(AF_INET, SOCK_STREAM, 0);
 
         if (this->socket < 0) {
-            throwError(
-                "SocketManager constructor: Could not get socket file descriptor");
+            throwError("SocketManager constructor: Could not get socket file descriptor");
         }
     }
 
