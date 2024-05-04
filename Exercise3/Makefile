@@ -1,5 +1,8 @@
-build: main.cpp
-	g++ -o httpGet main.cpp
+run: main
+	./main
+
+build: main.cpp HTTPServer.hpp
+	g++ -o main main.cpp
 	
 clean:
 	rm main

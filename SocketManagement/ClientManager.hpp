@@ -82,7 +82,7 @@ class ClientManager : public SocketManager {
         // Display error if the server we want to connect to cannot be found
         if (serverHostInfo == NULL) {
             throwError(
-                "ClientManager ""ructor: could not find server host info "
+                "ClientManager Constructor: could not find server host info "
                 "for " +
                 this->serverHostname);
         }
@@ -98,7 +98,7 @@ class ClientManager : public SocketManager {
 
         // Connect to server and display error if connection did not occur
         if (connect(this->socket, (sockaddr *)&(this->address), sizeof(this->address)) < 0) {
-            throwError("ClientManager ""ructor: socket file descriptor not found");
+            throwError("ClientManager Constructor: socket file descriptor not found");
         }
     }
 };

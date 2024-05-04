@@ -50,6 +50,23 @@ class HTTPResponse {
     
     // The body of the response
     string body;
+
+    // Get the properly formatted HTTP protocol text for the response
+    string getText() {
+        string output = "HTTP/1.1 " + this->status.getText() + "\r\n";
+
+        for (HTTPHeader header : this->headers) {
+            output += header.getText() + "\r\n";
+        }
+
+        if (!this->body.empty()) {
+            output += "\r\n" + this->body + "\r\n";
+        }
+
+        output += "\r\n";
+
+        return output;
+    }
 };
 
 #endif

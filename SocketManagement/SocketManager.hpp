@@ -80,7 +80,7 @@ class SocketManager {
 
         if (this->socket < 0) {
             throwError(
-                "SocketManager ""ructor: Could not get socket file "
+                "SocketManager Constructor: Could not get socket file "
                 "descriptor");
         }
     }
