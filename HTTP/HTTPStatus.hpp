@@ -55,6 +55,12 @@ struct HTTPStatus {
     string getText() { 
         return to_string(this->number) + " " + this->title; 
     }
+    
+    static const HTTPStatus notFound;
+    static const HTTPStatus ok;
 };
+
+const HTTPStatus HTTPStatus::notFound = HTTPStatus(404, "NOT FOUND");
+const HTTPStatus HTTPStatus::ok = HTTPStatus(200, "OK");
 
 #endif

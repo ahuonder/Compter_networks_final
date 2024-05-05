@@ -40,32 +40,33 @@ class ClientManager : public SocketManager {
     string receive() {
         string message = "";
         
-        //while (true) {
+        while (true) {
             this->clearBuffer();
             int result = read(this->socket, this->buffer, this->bufferSize);
-            cout << "Read result: " << result << endl;
 
             if (result < 0) {
                 throwError("ClientManager receive: failed to read socket");
-                //break;
+                break;
             } else if (result == 0) {
-                //break;
+                break;
             } else {
-                cout << "BUFF: " << this->buffer << endl;
                 message.append(this->buffer);
             }
-        //}
+        }
 
         return message;
     }
     
-    void receiveFile(string path) {
+    int receiveFile(string path) {
         FILE *file = fopen(path.c_str(), "w");
+        
+        if (file == NULL) {
+            return -1;
+        }
 
         while (true) {
             this->clearBuffer();
             int result = read(this->socket, this->buffer, this->bufferSize);
-            cout << "Read File result: " << result << endl;
 
             if (result < 0) {
                 throwError("ClientManager receive: failed to read socket");
@@ -73,12 +74,12 @@ class ClientManager : public SocketManager {
             } else if (result == 0) {
                 break;
             } else {
-                cout << "BUFF: " << this->buffer << endl;
                 fwrite(this->buffer, sizeof(this->buffer[0]), this->bufferSize, file);
             }
         }
         
         fclose(file);
+        return this->bufferSize;
     }
 
     // Sends a message to the server

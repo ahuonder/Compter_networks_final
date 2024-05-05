@@ -34,12 +34,8 @@ class HTTPResponse {
 
         response.headers = HTTPHeader::decodeMultipleFrom(lines);
         
-        // Get body text if a body was sent
-        if (lines.size() == 0 or lines[0] != "") {
-            response.body = combineStrings(lines, "\r\n");
-            response.body = getSubstringTillMatch(response.body, "\r\n");
-            response.body = getSubstringTillMatch(response.body, "\r\n");
-        }
+        eraseStringTillMatch(message, "\r\n\r\n", true);
+        response.body = message.substr(0, message.size() - 4);
         
         return response;
     }

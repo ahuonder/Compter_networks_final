@@ -45,7 +45,7 @@ class ServerManager : public SocketManager {
             throwError("ServerManager send: error writing to socket");
         }
         
-        //this->removeClient(clientIndex, false);
+        this->removeClient(clientIndex, false);
     }
     
     // Call to close all connections

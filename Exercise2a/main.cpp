@@ -5,6 +5,7 @@
 #include "../HTTP/HTTPRequest.hpp"
 #include "../HTTP/HTTPResponse.hpp"
 #include "../SocketManagement/ClientManager.hpp"
+#include "../Tools/FileManip.hpp"
 using namespace std;
 
 // Executes a single HTTP GET request to a web server and stores the file it gets in response
@@ -30,8 +31,14 @@ int main(int argc, char *argv[]) {
         cout << request.getText();
 
         // Send message, get response, convert to HTTPResponse object
-        string message = client.sendThenReceive(request.getText());
-        cout << "MESSAGE SIZE: " << message.size() << endl;
+        client.send(request.getText());
+        
+        string tmpFileName = "tmp/tmp.txt";
+        client.receiveFile(tmpFileName);
+        string message = readFileAt(tmpFileName);
+        
+        remove(tmpFileName.c_str());
+        
         HTTPResponse response = HTTPResponse::decodeFrom(message);
 
         // Display information about the response
@@ -43,6 +50,7 @@ int main(int argc, char *argv[]) {
         cout << endl << "Headers:\n\n";
         
         string fileName = "";
+        int contentLength = 0;
 
         for (HTTPHeader header : response.headers) {
             cout << header.getText() << endl;
@@ -51,17 +59,26 @@ int main(int argc, char *argv[]) {
                 fileName = header.value;
                 eraseStringTillMatch(fileName, "\"", true);
                 fileName = getSubstringTillMatch(fileName, "\"");
+            } else if (header.name == "Content-Length") {
+                contentLength = stoi(header.value);
             }
         }
 
-        // Display response body
-        cout << endl << "Body:" << endl << endl;
-        cout << response.body << endl;
-        
         if (!fileName.empty()) {
-            cout << "FILENAME: " << fileName << endl;
+            // Write body data to received file location
+            string filePath = getUniqueFileNameFor("files/" + fileName);
+            
+            if (filePath.empty()) {
+                cerr << "Could not make file because too many files with the base name: " << filePath << " exist already.\n";
+            } else {
+                writeToFileAt(response.body, filePath, contentLength);
+                cout << "Received file written to: " << filePath << endl;
+            }
+        } else {
+            // Display response body
+            cout << endl << "Body:" << endl << endl;
+            cout << response.body << endl;
         }
-        
     } catch (string error) {
         // Handle thrown exceptions
         cout << "Error occurred: " << error << endl;
