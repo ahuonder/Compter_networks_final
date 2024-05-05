@@ -9,6 +9,7 @@
 #include "../SocketManagement/ServerManager.hpp"
 #include "../HTTP/HTTPRequest.hpp"
 #include "../HTTP/HTTPResponse.hpp"
+#include "../Tools/FileManip.hpp"
 using namespace std;
 
 // Overrides ServerManager to perform specic HTTP tasks
@@ -50,41 +51,18 @@ class HTTPServer : public ServerManager {
         cout << message << endl;
         
         HTTPRequest request = HTTPRequest::decodeFrom(message);
-
-        HTTPStatus status = HTTPStatus(200, "OK");
-        HTTPResponse response = HTTPResponse(status);
+        HTTPResponse response = HTTPResponse(HTTPStatus::ok);
         
-        string html = this->getHTML();
+        response.body = readFileAt("files/index.html");
         
-        if (html != "") {
-            response.body = html;
-        } else {
-            response.status = HTTPStatus(404, "NOT FOUND");
+        if (response.body.empty()) {
+            response = HTTPResponse(HTTPStatus::notFound);
         }
         
         cout << "Sending response:\n";
         cout << response.getText();
 
         this->send(response.getText(), clientSocket);
-    }
-    
-    // Reads the content of index.html and returns it as a string
-    string getHTML() {
-        ifstream file("index.html");
-        if (!file.is_open()) {
-            return "";
-        }
-        
-        string output = "";
-        
-        while (file.good()) {
-            string line = "";
-            getline(file, line);
-            output += line;
-        }
-        
-        file.close();
-        return output;
     }
 };
 
