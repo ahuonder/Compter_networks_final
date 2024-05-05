@@ -1,6 +1,7 @@
 // Exercise 2a
 // Write a client program to execute a single HTTP GET on any type of content.
 // The requested file will be stored locally.
+// Author: Mark Reggiardo
 
 #include "../HTTP/HTTPRequest.hpp"
 #include "../HTTP/HTTPResponse.hpp"
