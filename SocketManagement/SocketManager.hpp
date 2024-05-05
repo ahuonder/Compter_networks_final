@@ -45,7 +45,7 @@ class SocketManager {
     }
 
     // Default size for the buffer
-    static const int DEFAULT_BUFFER_SIZE = 2048;
+    static const int DEFAULT_BUFFER_SIZE = 120000;
     
     // Default port to use for program
     static const int DEFAULT_PORT = 3001;

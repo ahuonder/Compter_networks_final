@@ -37,6 +37,8 @@ class HTTPResponse {
         // Get body text if a body was sent
         if (lines.size() == 0 or lines[0] != "") {
             response.body = combineStrings(lines, "\r\n");
+            response.body = getSubstringTillMatch(response.body, "\r\n");
+            response.body = getSubstringTillMatch(response.body, "\r\n");
         }
         
         return response;

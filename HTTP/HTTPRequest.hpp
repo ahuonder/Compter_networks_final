@@ -72,6 +72,8 @@ class HTTPRequest {
         // Get body text if a body was sent
         if (lines.size() == 0 or lines[0] != "") {
             request.body = combineStrings(lines, "\r\n");
+            request.body = getSubstringTillMatch(request.body, "\r\n");
+            request.body = getSubstringTillMatch(request.body, "\r\n");
         }
 
         return request;

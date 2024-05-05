@@ -44,8 +44,10 @@ class ServerManager : public SocketManager {
         if (write(this->clients[clientIndex].fd, message.c_str(), message.size()) < 0) {
             throwError("ServerManager send: error writing to socket");
         }
+        
+        //this->removeClient(clientIndex, false);
     }
-
+    
     // Call to close all connections
     void closeAllConnections() {
         for (int i = 0; i < this->clientCount; i++) {
@@ -63,6 +65,20 @@ class ServerManager : public SocketManager {
         } else {
             return 0;
         }
+    }
+
+    // Remove a client at the given index when it is no longer in use
+    // Parameter 1: The client index to remove
+    // Parameter 2: Pass in true if the client disconnected itself
+    void removeClient(int index, bool didClientDisconnect) {
+        ::close(this->clients[index].fd);
+
+        for (int i = index; i < this->clientCount; i++) {
+            this->clients[i] = this->clients[i + 1];
+        }
+
+        this->clientCount--;
+        this->onDisconnect(index, didClientDisconnect);
     }
 
     // Closes all client sockets when object is destructed
@@ -115,20 +131,6 @@ class ServerManager : public SocketManager {
         this->clients[this->clientCount].fd = newSocket;
         this->clients[this->clientCount].events = events;
         this->clientCount++;
-    }
-
-    // Remove a client at the given index when it is no longer in use
-    // Parameter 1: The client index to remove
-    // Parameter 2: Pass in true if the client disconnected itself
-    void removeClient(int index, bool didClientDisconnect) {
-        ::close(this->clients[index].fd);
-
-        for (int i = index; i < this->clientCount; i++) {
-            this->clients[i] = this->clients[i + 1];
-        }
-
-        this->clientCount--;
-        this->onDisconnect(index, didClientDisconnect);
     }
 
     // Connect to the socket

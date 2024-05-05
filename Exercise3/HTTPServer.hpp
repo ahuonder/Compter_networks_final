@@ -41,7 +41,7 @@ class HTTPServer : public ServerManager {
         cout << (didClientDisconnect ? "" : "Not ") << "Disconnected by Client\n";
     }
 
-    // Displays message and echos back to client
+    // Sends HTML or 404 error back to client
     // Parameter 1: The message that was received
     // Parameter 2: The index of the client in the ServerManager
     // Called by ServerManager code when a message is received from a client

@@ -1,5 +1,5 @@
 build: main.cpp
-	g++ -o httpGet main.cpp
+	g++ -o main main.cpp
 	
 clean:
 	rm main

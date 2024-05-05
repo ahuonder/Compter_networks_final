@@ -5,7 +5,9 @@
 // A class that manages socket connections for a client
 // Author: Mark Reggiardo
 
+#include <sys/ioctl.h>
 #include <string>
+#include <fstream>
 #include "SocketManager.hpp"
 using namespace std;
 
@@ -36,18 +38,47 @@ class ClientManager : public SocketManager {
     // Returns: Message received from server
     // Throws exception if message was empty or socket could not be read
     string receive() {
-        this->clearBuffer();
-        int result = read(this->socket, this->buffer, this->bufferSize);
+        string message = "";
+        
+        //while (true) {
+            this->clearBuffer();
+            int result = read(this->socket, this->buffer, this->bufferSize);
+            cout << "Read result: " << result << endl;
 
-        if (result == 0) {
-            throwError("Server disconnected");
-            return "";
-        } else if (result < 0) {
-            throwError("ClientManager receive: failed to read socket");
-            return "";
-        } else {
-            return this->buffer;
+            if (result < 0) {
+                throwError("ClientManager receive: failed to read socket");
+                //break;
+            } else if (result == 0) {
+                //break;
+            } else {
+                cout << "BUFF: " << this->buffer << endl;
+                message.append(this->buffer);
+            }
+        //}
+
+        return message;
+    }
+    
+    void receiveFile(string path) {
+        FILE *file = fopen(path.c_str(), "w");
+
+        while (true) {
+            this->clearBuffer();
+            int result = read(this->socket, this->buffer, this->bufferSize);
+            cout << "Read File result: " << result << endl;
+
+            if (result < 0) {
+                throwError("ClientManager receive: failed to read socket");
+                break;
+            } else if (result == 0) {
+                break;
+            } else {
+                cout << "BUFF: " << this->buffer << endl;
+                fwrite(this->buffer, sizeof(this->buffer[0]), this->bufferSize, file);
+            }
         }
+        
+        fclose(file);
     }
 
     // Sends a message to the server
