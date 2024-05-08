@@ -3,6 +3,8 @@
 // and respond with an HTML message.
 // Author: Mark Reggiardo
 
+#include <unistd.h>
+#include <string.h>
 #include "HTTPServer.hpp"
 using namespace std;
 

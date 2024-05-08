@@ -2,7 +2,7 @@
 #define HTTPServer_hpp
 
 // CPSC 447 Final Project
-// A class to implement an HTTP web server that respons with an HTML message
+// A class to implement an HTTP web server that responds with an HTML message
 // Author: Mark Reggiardo
 
 #include <fstream>

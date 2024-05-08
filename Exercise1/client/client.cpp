@@ -4,6 +4,9 @@
 // Create a client to connect to a server
 // Author: Mark Reggiardo
 
+#include <unistd.h>
+#include <string.h>
+#include <climits>
 #include "../../SocketManagement/ClientManager.hpp"
 #include "../../Tools/GetPortNumber.hpp"
 using namespace std;

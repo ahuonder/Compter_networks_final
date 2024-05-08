@@ -2,6 +2,8 @@
 // Write a client program to execute a single HTTP GET to a Web server. 
 // Author: Mark Reggiardo
 
+#include <unistd.h>
+#include <string.h>
 #include "../HTTP/HTTPRequest.hpp"
 #include "../HTTP/HTTPResponse.hpp"
 #include "../SocketManagement/ClientManager.hpp"

@@ -3,7 +3,8 @@
 // Based on exercise 2.4 from Stalling's textbook
 // Create stream-based echo server, which can simultaneously handle multiple clients connecting to it
 // Author: Mark Reggiardo
-
+#include <unistd.h>
+#include <string.h>
 #include "EchoServer.hpp"
 using namespace std;
 
