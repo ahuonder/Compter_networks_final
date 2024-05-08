@@ -1,5 +1,8 @@
+run: main
+	./main
+
 build: main.cpp
-	g++ -o httpGet main.cpp
+	g++ -std=c++20 -stdlib=libc++ -o main main.cpp
 	
 clean:
 	rm main

@@ -48,7 +48,7 @@ class HTTPServer : public ServerManager {
     // Called by ServerManager code when a message is received from a client
     void onReceive(string message, int clientSocket) override {
         cout << "\nHTTPServer Message received from client " << clientSocket << endl << endl;
-        cout << message << endl;
+        //cout << message << endl;
         
         HTTPRequest request = HTTPRequest::decodeFrom(message);
         HTTPResponse response = HTTPResponse(HTTPStatus::ok);
@@ -60,7 +60,7 @@ class HTTPServer : public ServerManager {
         }
         
         cout << "Sending response:\n";
-        cout << response.getText();
+        //cout << response.getText();
 
         this->send(response.getText(), clientSocket);
     }

@@ -33,6 +33,8 @@ int main(int argc, char *argv[]) {
         cerr << "Could not read number of times to send request, defaulting to " << requestCount << endl;
     }
 
+    auto startTime = chrono::high_resolution_clock::now();
+
     // Get the URL to connect to from the arguments
     HTTPRequest request = HTTPRequest(argv[1]);
     cout << "The request will be sent " << requestCount << " times and each request will look like this:\n" << request.getText();
@@ -70,6 +72,12 @@ int main(int argc, char *argv[]) {
             cout << "Error occurred: " << error << endl;
         }
     }
+
+    auto finishTime = chrono::high_resolution_clock::now();
+
+    auto elapsedTime = finishTime - startTime;
+
+    cout << "Elapsed Time: " << elapsedTime.count() << endl;
 
     cout << "Client program ending" << endl;
     return 0;
