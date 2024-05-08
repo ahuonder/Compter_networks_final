@@ -8,6 +8,8 @@
 #include <string>
 using namespace std;
 
+//talk about socket manager
+
 // Represents an HTTP status
 struct HTTPStatus {
     public:
@@ -58,9 +60,11 @@ struct HTTPStatus {
     
     static const HTTPStatus notFound;
     static const HTTPStatus ok;
+    static const HTTPStatus found;
 };
 
 const HTTPStatus HTTPStatus::notFound = HTTPStatus(404, "NOT FOUND");
 const HTTPStatus HTTPStatus::ok = HTTPStatus(200, "OK");
+const HTTPStatus HTTPStatus::found = HTTPStatus(302, "FOUND");
 
 #endif
